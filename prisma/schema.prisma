@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  name             String
+  email            String   @unique
+  password         String
+  createdAt        DateTime @default(now())
+  address          String?
+  approved         Boolean  @default(false)
+  experience       String?
+  photo            String?
+  specialist       String?
+  technicianStatus String   @default("STANDBY")
+  whatsapp         String?
+  role             Role     @default(CUSTOMER)
+  technicianOrders Order[]  @relation("TechnicianOrders")
+}
+
+model Order {
+  id               Int         @id @default(autoincrement())
+  service          String
+  technicianId     Int?
+  createdAt        DateTime    @default(now())
+  status           OrderStatus @default(PENDING)
+  customerAddress  String
+  customerName     String
+  customerWhatsapp String
+  technician       User?       @relation("TechnicianOrders", fields: [technicianId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  ASSIGNED
+  PROCESS
+  DONE
+}
+
+enum TechnicianStatus {
+  OFFLINE
+  STANDBY
+  ON_THE_WAY
+  WORKING
+}
