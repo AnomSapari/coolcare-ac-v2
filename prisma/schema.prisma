@@ -25,15 +25,18 @@ model User {
 }
 
 model Order {
-  id               Int         @id @default(autoincrement())
-  service          String
-  technicianId     Int?
-  createdAt        DateTime    @default(now())
-  status           OrderStatus @default(PENDING)
-  customerAddress  String
-  customerName     String
-  customerWhatsapp String
-  technician       User?       @relation("TechnicianOrders", fields: [technicianId], references: [id])
+  id                Int      @id @default(autoincrement())
+  customerName      String
+  customerWhatsapp  String
+  customerAddress   String
+  service           String
+
+  status            String   @default("PENDING")
+
+  technicianId      Int?
+  technician        Technician? @relation(fields: [technicianId], references: [id])
+
+  createdAt         DateTime @default(now())
 }
 
 enum Role {
@@ -44,9 +47,10 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  ASSIGNED
-  PROCESS
+  ON_THE_WAY
+  WORKING
   DONE
+  CANCELLED
 }
 
 enum TechnicianStatus {

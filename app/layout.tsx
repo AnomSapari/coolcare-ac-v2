@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Service AC Cepat & Terpercaya",
     description: "Teknisi AC datang ke lokasi Anda, booking online mudah",
-    url: "https://coolcare-ac.vercel.app",
+    url: "https://coolcare-ac-v2.vercel.app",
     siteName: "CoolCare AC",
     images: ["/ac.jpg"],
     locale: "id_ID",
