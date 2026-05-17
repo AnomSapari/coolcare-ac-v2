@@ -1,24 +1,46 @@
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { OrderStatus } from "@prisma/client";
-import { NextResponse } from "next/server";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  try {
+    // 📍 ambil id
+    const { id } = await context.params;
 
-  const params = await context.params;
+    // 📍 ambil body request
+    const body = await req.json();
 
-  const order = await prisma.order.update({
+    // 📍 update order
+    const order = await prisma.order.update({
+      where: {
+        id: Number(id),
+      },
 
-    where: {
-      id: Number(params.id),
-    },
+      data: {
+        status: body.status,
+      },
+    });
 
-    data: {
-      status: OrderStatus.PROCESS,
-    },
-  });
+    // ✅ success
+    return NextResponse.json({
+      success: true,
+      order,
+    });
 
-  return NextResponse.json(order);
+  } catch (error) {
+    console.error("ORDER UPDATE ERROR:", error);
+
+    // ❌ error
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to update order",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }

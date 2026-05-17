@@ -8,7 +8,7 @@ interface Technician {
   name: string;
   photo?: string;
   specialist?: string;
-  technicianStatus?: string;
+ 
 }
 
 export default function LiveTechnicians() {
@@ -70,9 +70,7 @@ export default function LiveTechnicians() {
                 {tech.name}
               </h3>
 
-              <p className="text-cyan-400 font-bold mb-2">
-                {tech.technicianStatus || "STANDBY"}
-              </p>
+              
 
               <p className="text-slate-400">
                 {tech.specialist || "Teknisi AC Profesional"}

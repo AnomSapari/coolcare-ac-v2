@@ -20,14 +20,11 @@ export async function POST(req: Request) {
         password: hashedPassword,
 
         whatsapp: body.whatsapp,
-        address: body.address,
-
-        experience: body.experience,
-        specialist: body.specialist,
+  
 
         role: "TECHNICIAN",
 
-        approved: false,
+        
       },
     });
 

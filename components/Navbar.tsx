@@ -36,6 +36,23 @@ export default function Navbar() {
     Booking
   </Link>
 
+  <Link
+  href="/login"
+  className="
+    px-4
+    py-2
+    rounded-lg
+    border
+    border-cyan-500/30
+    text-cyan-400
+    hover:bg-cyan-500
+    hover:text-white
+    transition
+  "
+>
+  Login
+</Link>
+
 </div>
 
         {/* HAMBURGER */}
@@ -51,6 +68,24 @@ export default function Navbar() {
       {/* MOBILE MENU */}
       {open && (
         <div className="md:hidden bg-slate-950 border-t border-white/10 px-4 py-2 flex flex-col gap-2 z-[70] text-sm">
+
+<Link
+  href="/login"
+  onClick={() => setOpen(false)}
+  className="
+    bg-cyan-500
+    hover:bg-cyan-600
+    px-5
+    py-3
+    rounded-xl
+    font-bold
+    text-white
+    text-center
+    transition
+  "
+>
+  Login Akun
+</Link>
 
   <Link href="#home" onClick={() => setOpen(false)} className="py-2">
     Home

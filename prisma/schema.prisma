@@ -8,35 +8,42 @@ datasource db {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
-  name             String
-  email            String   @unique
-  password         String
-  createdAt        DateTime @default(now())
-  address          String?
-  approved         Boolean  @default(false)
-  experience       String?
-  photo            String?
-  specialist       String?
-  technicianStatus String   @default("STANDBY")
-  whatsapp         String?
-  role             Role     @default(CUSTOMER)
-  technicianOrders Order[]  @relation("TechnicianOrders")
+  id Int @id @default(autoincrement())
+
+  name     String
+  email    String @unique
+  password String
+
+  role Role @default(CUSTOMER)
+
+  whatsapp String?
+  photo    String?
+
+  technicianStatus TechnicianStatus @default(OFFLINE)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
-  id                Int      @id @default(autoincrement())
-  customerName      String
-  customerWhatsapp  String
-  customerAddress   String
-  service           String
+  id Int @id @default(autoincrement())
 
-  status            String   @default("PENDING")
+  customerName     String
+  customerWhatsapp String
+  customerAddress  String
 
-  technicianId      Int?
-  technician        Technician? @relation(fields: [technicianId], references: [id])
+  service String
 
-  createdAt         DateTime @default(now())
+  status OrderStatus @default(PENDING)
+
+  technicianId Int?
+
+  technician User? @relation(fields: [technicianId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
@@ -52,6 +59,7 @@ enum OrderStatus {
   DONE
   CANCELLED
 }
+
 
 enum TechnicianStatus {
   OFFLINE

@@ -6,7 +6,7 @@ export async function GET() {
   const technicians = await prisma.user.findMany({
     where: {
       role: "TECHNICIAN",
-      approved: true,
+      
     },
 
     orderBy: {

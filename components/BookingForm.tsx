@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 
 export default function BookingForm() {
   const [name, setName] = useState("");
@@ -8,46 +10,48 @@ export default function BookingForm() {
   const [address, setAddress] = useState("");
   const [service, setService] = useState("");
   const [loading, setLoading] = useState(false);
+const router = useRouter();
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      const res = await fetch(
-        "/api/bookings",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            whatsapp,
-            address,
-            service,
-          }),
-        }
-      );
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: name,
+          customerWhatsapp: whatsapp,
+          customerAddress: address,
+          service,
+        }),
+      });
 
-      if (!res.ok) {
-        alert("Booking gagal");
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || "Booking gagal");
         return;
       }
 
       alert("Booking berhasil ✅");
 
-      setName("");
-      setWhatsapp("");
-      setAddress("");
-      setService("");
+router.push(
+  `/tracking?id=${data.order.id}`
+);
 
+setName("");
+setWhatsapp("");
+setAddress("");
+setService("");
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan");
+      alert("Terjadi kesalahan server");
     } finally {
       setLoading(false);
     }
@@ -57,6 +61,7 @@ export default function BookingForm() {
     <section className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
 
+        {/* HEADER */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             Booking Service AC
@@ -67,105 +72,66 @@ export default function BookingForm() {
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">
-              Nama Lengkap
-            </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nama Lengkap"
+            required
+            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white"
+          />
 
-            <input
-              type="text"
-              value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
-              placeholder="Masukkan nama"
-              required
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"
-            />
-          </div>
+          <input
+            type="text"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            placeholder="Nomor WhatsApp"
+            required
+            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white"
+          />
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">
-              Nomor WhatsApp
-            </label>
+          <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Alamat lengkap"
+            required
+            rows={3}
+            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white"
+          />
 
-            <input
-              type="text"
-              value={whatsapp}
-              onChange={(e) =>
-                setWhatsapp(e.target.value)
-              }
-              placeholder="08xxxxxxxxxx"
-              required
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">
-              Alamat
-            </label>
-
-            <textarea
-              value={address}
-              onChange={(e) =>
-                setAddress(e.target.value)
-              }
-              placeholder="Masukkan alamat lengkap"
-              required
-              rows={3}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">
-              Jenis Service
-            </label>
-
-            <select
-              value={service}
-              onChange={(e) =>
-                setService(e.target.value)
-              }
-              required
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"
-            >
-              <option value="">
-                Pilih layanan
-              </option>
-
-              <option value="Cuci AC">
-                Cuci AC
-              </option>
-
-              <option value="Isi Freon">
-                Isi Freon
-              </option>
-
-              <option value="Bongkar Pasang">
-                Bongkar Pasang
-              </option>
-
-              <option value="Perbaikan AC">
-                Perbaikan AC
-              </option>
-            </select>
-          </div>
+          <select
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+            required
+            className="
+  w-full
+  bg-slate-800
+  border
+  border-slate-700
+  rounded-xl
+  px-3
+  py-2.5
+  text-sm
+  md:text-base
+  text-white
+"
+          >
+            <option value="">Pilih layanan</option>
+            <option value="Cuci AC">Cuci AC</option>
+            <option value="Isi Freon">Isi Freon</option>
+            <option value="Bongkar Pasang">Bongkar Pasang</option>
+            <option value="Perbaikan AC">Perbaikan AC</option>
+          </select>
 
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-cyan-500 hover:bg-cyan-600 transition-all text-white font-semibold py-3 rounded-xl"
           >
-            {loading
-              ? "Mengirim..."
-              : "Booking Sekarang"}
+            {loading ? "Mengirim..." : "Booking Sekarang"}
           </button>
         </form>
       </div>

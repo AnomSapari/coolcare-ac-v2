@@ -5,7 +5,7 @@ export default async function TechniciansPage() {
   const technicians = await prisma.user.findMany({
     where: {
       role: "TECHNICIAN",
-      approved: true,
+     
     },
 
     orderBy: {
@@ -41,13 +41,9 @@ export default async function TechniciansPage() {
                 {tech.name}
               </h2>
 
-              <p className="text-center text-cyan-400 font-bold mb-2">
-                {tech.technicianStatus}
-              </p>
+             
 
-              <p className="text-center text-slate-400">
-                {tech.specialist}
-              </p>
+             
 
             </div>
           ))}

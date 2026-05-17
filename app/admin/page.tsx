@@ -3,28 +3,40 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import LogoutButton from "@/components/LogoutButton";
+
 
 export default async function AdminPage() {
 
   const session = await getServerSession(authOptions);
+  
+// ❌ belum login
+  if (!session?.user) {
+  redirect("/login");
+}
 
+// ❌ bukan admin
   if (session?.user?.role !== "ADMIN") {
     redirect("/");
   }
 
-  // ORDER
+// ORDER
   const orders = await prisma.order.findMany({
+
+    include: {
+    technician: true,
+  },
+  
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  // TEKNISI PENDING APPROVAL
+// TEKNISI PENDING APPROVAL
   const pendingTechnicians = await prisma.user.findMany({
-    where: {
-      role: "TECHNICIAN",
-      approved: false,
-    },
+   where: {
+  role: "TECHNICIAN",
+},
 
     orderBy: {
       createdAt: "desc",
@@ -33,10 +45,9 @@ export default async function AdminPage() {
 
   // TEKNISI APPROVED
   const technicians = await prisma.user.findMany({
-    where: {
-      role: "TECHNICIAN",
-      approved: true,
-    },
+   where: {
+  role: "TECHNICIAN",
+},
 
     orderBy: {
       createdAt: "desc",
@@ -44,13 +55,32 @@ export default async function AdminPage() {
   });
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-6">
+  <main
+    className="
+      min-h-screen
+      bg-slate-950
+      text-white
+      p-4 md:p-10
+    "
+  >
 
       <div className="max-w-7xl mx-auto">
 
-        <h1 className="text-4xl font-black mb-10">
-          Dashboard Admin
-        </h1>
+<div className="flex items-center justify-between mb-10">
+
+  <div>
+    <h1 className="text-5xl font-bold">
+      Dashboard Admin
+    </h1>
+
+    <p className="text-slate-400 mt-2">
+      Kelola booking dan teknisi
+    </p>
+  </div>
+
+  <LogoutButton />
+
+</div>
 
         {/* TEKNISI PENDING */}
         <section className="mb-16">
@@ -78,21 +108,17 @@ export default async function AdminPage() {
                   {tech.name}
                 </h3>
 
-                <p className="text-slate-400 mb-2">
+                <p className="text-red-400 mb-2">
                   {tech.email}
                 </p>
 
-                <p className="text-slate-400 mb-2">
+                <p className="text-yellow-400 mb-2">
                   WhatsApp: {tech.whatsapp}
                 </p>
 
-                <p className="text-slate-400 mb-2">
-                  Pengalaman: {tech.experience}
-                </p>
+  
 
-                <p className="text-slate-400 mb-6">
-                  Spesialis: {tech.specialist}
-                </p>
+               
 
                 <form
                   action={`/api/admin/approve-technician?id=${tech.id}`}
@@ -140,25 +166,46 @@ export default async function AdminPage() {
                   {order.service}
                 </h3>
 
-                <p className="text-slate-400 mb-2">
-                  Customer: {order.customerName}
-                </p>
+ <p>
+          Customer:
+          {" "}
+          <span className="text-white font-semibold">
+            {order.customerName}
+          </span>
+        </p>
 
-                <p className="text-slate-400 mb-2">
-                  WhatsApp: {order.customerWhatsapp}
-                </p>
+        <p>
+          WhatsApp:
+          {" "}
+          <span className="text-green-400 font-semibold">
+            {order.customerWhatsapp}
+          </span>
+        </p>
 
-                <p className="text-slate-400 mb-2">
-                  Address: {order.customerAddress}
-                </p>
+        <p>
+          Address:
+          {" "}
+          <span className="text-slate-200">
+            {order.customerAddress}
+          </span>
+        </p>
 
-                <p className="mb-4">
-                  Status:
-                  {" "}
-                  <span className="text-cyan-400 font-bold">
-                    {order.status}
-                  </span>
-                </p>
+{/* STATUS */}
+<p className="mb-3">
+  Status:
+  {" "}
+  <span className="text-cyan-400 font-bold">
+    {order.status}
+  </span>
+</p>
+
+<p className="mb-4">
+  Teknisi:
+  {" "}
+  <span className="text-yellow-400 font-bold">
+    {order.technician?.name || "Belum dipilih"}
+  </span>
+</p>
 
                 <form
                   action="/api/admin/assign"
@@ -200,6 +247,40 @@ export default async function AdminPage() {
                   >
                     Assign Teknisi
                   </button>
+                  {order.technician?.whatsapp && (
+
+  <a
+    href={`https://wa.me/${order.technician.whatsapp}?text=${encodeURIComponent(
+      `Halo ${order.technician.name},
+
+Anda mendapat order baru.
+
+Customer:
+${order.customerName}
+
+Alamat:
+${order.customerAddress}
+
+Silakan login dashboard teknisi.`
+    )}`}
+
+    target="_blank"
+
+    className="
+      block
+      mt-4
+      text-center
+      bg-green-500
+      hover:bg-green-600
+      py-3
+      rounded-2xl
+      font-bold
+    "
+  >
+    Kirim Notifikasi Teknisi
+  </a>
+
+)}
 
                 </form>
 

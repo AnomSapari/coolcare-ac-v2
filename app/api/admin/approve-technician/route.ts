@@ -20,9 +20,9 @@ export async function POST(req: Request) {
         id: Number(id),
       },
 
-      data: {
-        approved: true,
-      },
+     data: {
+  role: "TECHNICIAN",
+},
     });
 
     return Response.redirect(

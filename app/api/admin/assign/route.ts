@@ -1,4 +1,4 @@
-
+import { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   try {
 
     const formData = await req.formData();
+    
 
     const orderId = formData.get("orderId");
     const technicianId = formData.get("technicianId");
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
 
       data: {
         technicianId: Number(technicianId),
-        status: "PROCESS",
+        status: "ON_THE_WAY",
       },
     });
 

@@ -14,22 +14,22 @@ import {
 
 const services = [
   {
-    title: "Service AC",
-    desc: "Perbaikan AC tidak dingin, bocor, atau rusak.",
+    title: "Bongkar Pasang AC",
+    desc: "Pindah lokasi atau pasang baru, kami siap membantu.",
     icon: Wrench,
-    price: "Mulai 75K",
+    price: "Mulai 600K",
   },
   {
     title: "Cuci AC",
     desc: "Membersihkan AC agar kembali dingin dan hemat listrik.",
     icon: Wind,
-    price: "Mulai 60K",
+    price: "Mulai 95K",
   },
   {
-    title: "Isi Freon",
+    title: "Isi Freon R22 R32 atau R410",
     desc: "Isi freon + pengecekan kebocoran profesional.",
     icon: Snowflake,
-    price: "Mulai 150K",
+    price: "Mulai 210K",
   },
 ];
 

@@ -1,30 +1,34 @@
-
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
+  try {
+    const body = await req.json();
 
-  const formData = await req.formData();
+    const orderId = Number(body.orderId);
 
-  const orderId = formData.get("orderId") as string;
+    if (!orderId) {
+      return NextResponse.json(
+        { success: false, message: "orderId tidak valid" },
+        { status: 400 }
+      );
+    }
 
-  if (!orderId) {
-    return Response.json({
-      success: false,
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: "DONE",
+      },
     });
+
+    return NextResponse.json({ success: true });
+
+  } catch (error) {
+    console.error("FINISH ERROR:", error);
+
+    return NextResponse.json(
+      { success: false, message: "server error finish" },
+      { status: 500 }
+    );
   }
-
-  await prisma.order.update({
-    where: {
-      id: Number(orderId),
-    },
-
-    data: {
-      status: "DONE",
-    },
-  });
-
-  return Response.redirect(
-    new URL("/technician", req.url)
-  );
 }

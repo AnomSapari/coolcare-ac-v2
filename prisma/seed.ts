@@ -18,30 +18,24 @@ async function main() {
       email: "admin@gmail.com",
       password: hashedPassword,
       role: "ADMIN",
-      approved: true,
+     
     },
   });
 
   // TEKNISI DEMO
   await prisma.user.create({
-    data: {
-      name: "Budi Teknisi",
-      email: "teknisi@gmail.com",
-      password: hashedPassword,
+  data: {
+    name: "Teknisi Demo",
+    email: "teknisi@coolcare.com",
+    password: hashedPassword,
 
-      role: "TECHNICIAN",
+    role: "TECHNICIAN",
 
-      approved: true,
+    whatsapp: "08123456789",
 
-      whatsapp: "08123456789",
-
-      specialist: "Service AC & Bongkar Pasang",
-
-      technicianStatus: "STANDBY",
-
-      photo: "/default-avatar.png",
-    },
-  });
+    technicianStatus: "STANDBY",
+  },
+});
 
   console.log("Seed berhasil");
 }

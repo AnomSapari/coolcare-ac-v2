@@ -1,20 +1,17 @@
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
-
+export async function POST(req: NextRequest) {
   try {
-
-    const body = await request.json();
-
-    const { orderId, status } = body;
+    const body = await req.json();
 
     const order = await prisma.order.update({
       where: {
-        id: Number(orderId),
+        id: Number(body.orderId),
       },
+
       data: {
-        status,
+        status: body.status,
       },
     });
 
@@ -24,13 +21,12 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-
-    console.log(error);
+    console.error("STATUS ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Gagal update status",
+        message: "Failed to update status",
       },
       {
         status: 500,

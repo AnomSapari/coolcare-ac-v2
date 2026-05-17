@@ -1,26 +1,30 @@
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
+
   try {
+
     const body = await req.json();
 
     const {
-      name,
-      whatsapp,
-      address,
+      customerName,
+      customerWhatsapp,
+      customerAddress,
       service,
     } = body;
 
     // VALIDASI
     if (
-      !name ||
-      !whatsapp ||
-      !address ||
+      !customerName ||
+      !customerWhatsapp ||
       !service
     ) {
-      return Response.json(
+
+      return NextResponse.json(
         {
-          error: "Data belum lengkap",
+          success: false,
+          message: "Field wajib belum lengkap",
         },
         {
           status: 400,
@@ -28,25 +32,91 @@ export async function POST(req: Request) {
       );
     }
 
-    // SIMPAN ORDER
+    // CREATE ORDER
     const order = await prisma.order.create({
-      data: {
-        service,
 
-        customerName: name,
-        customerWhatsapp: whatsapp,
-        customerAddress: address,
+      data: {
+        customerName,
+        customerWhatsapp,
+        customerAddress:
+          customerAddress || "-",
+        service,
+        status: "PENDING",
       },
+
     });
 
-    return Response.json(order);
+    // SEND WHATSAPP NOTIFICATION
+    try {
+
+      await fetch(
+        "https://api.fonnte.com/send",
+        {
+          method: "POST",
+
+          headers: {
+            Authorization:
+              process.env.FONNTE_TOKEN || "",
+
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+
+            target:
+              "6283194549588",
+
+            message:
+`📦 Booking Baru
+
+ID Booking: #${order.id}
+
+Customer:
+${customerName}
+
+Service:
+${service}
+
+Alamat:
+${customerAddress}
+
+WhatsApp:
+${customerWhatsapp}
+            `,
+          }),
+        }
+      );
+
+    } catch (waError) {
+
+      console.error(
+        "FONNTE ERROR:",
+        waError
+      );
+    }
+
+    // SUCCESS
+    return NextResponse.json({
+
+      success: true,
+      message: "Booking berhasil",
+      order,
+
+    });
 
   } catch (error) {
-    console.error("BOOKING ERROR:", error);
 
-    return Response.json(
+    console.error(
+      "BOOKING ERROR:",
+      error
+    );
+
+    return NextResponse.json(
       {
-        error: "Server error",
+        success: false,
+        message:
+          "Server error booking",
       },
       {
         status: 500,
